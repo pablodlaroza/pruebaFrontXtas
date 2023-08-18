@@ -1,0 +1,8 @@
+[build]
+  command = "npm run build"   # Comando para construir tu aplicación (ajústalo según tu proyecto)
+  publish = "dist"           # Carpeta de salida después de la construcción
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

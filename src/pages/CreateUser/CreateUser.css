@@ -1,0 +1,21 @@
+.container{
+   
+    
+    
+    /* justify-content: center; */
+    height: 100vh; /* Ajusta la altura de acuerdo a tus necesidades */
+    background-color: rgba(241, 241, 241, 0.474);
+    padding: 30px ;
+    border-radius: 7px;
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+   
+}
+.recap{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px;
+}
+

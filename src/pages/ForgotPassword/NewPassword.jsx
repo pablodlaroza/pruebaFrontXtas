@@ -8,11 +8,12 @@ import axios from 'axios';
 import swal from 'sweetalert';
 
 const SignupSchema = Yup.object().shape({
-  correo: Yup.string().email('Correo inválido').required('Campo obligatorio').max(100),
+    password: Yup.string().required('Campo obligatorio').max(100),
+    contrasenia: Yup.string()
 });
 
 
-const ForgotPassword = ({ setLoggedIn }) => { 
+const NewPassword = ({ setLoggedIn }) => { 
   const [captcha, setCaptcha]= useState(null)
   const recaptchaRef = useRef(null)
   const navigate = useNavigate();
@@ -37,53 +38,58 @@ const ForgotPassword = ({ setLoggedIn }) => {
     // const id = data.find((user) => user.username === values.username);
 
   
-    const recaptchaValue = recaptchaRef.current.getValue();
-    if (!recaptchaValue) {
-      alert('Por favor, complete el reCAPTCHA.');
-      return;
-    }
+  
   };
 
   return (
     <div>
-    
-      
       <Formik
         initialValues={{
-          correo: ''
+            password: '',
+            contrasenia: '',
         }}
         validationSchema={SignupSchema}
         onSubmit={handleSubmit}
       >
         {({ isSubmitting, errors, touched, values, handleChange }) => (
           <Form className='container'>
-            <h1>Cambiar Contraseña</h1>
-           
+            <h1>Ingresa nueva contraseña</h1>
             <div>
                   <TextField
-                    label="Correo"
-                    name="correo"
-                    type="email"
+                    label="Contraseña"
+                    name="password"
+                    type="password"
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    error={Boolean(errors.correo && touched.correo)}
-                    helperText={(errors.correo && touched.correo) && errors.correo}
-                    value={values.correo}
+                    error={Boolean(errors.password && touched.password)}
+                    helperText={(errors.password && touched.password) && errors.password}
+                    value={values.password}
                     onChange={handleChange}
                     inputProps={{ maxLength: 100 }}
-                    autoComplete="off"
-                    className="large-input"
+                  />
+                </div>
+                <div>
+                  <TextField
+                    label="Confirmar Contraseña"
+                    name="contrasenia"
+                    type="password"
+                    variant="outlined"
+                    fullWidth
+                    margin="normal"
+                    error={Boolean(errors.contrasenia && touched.contrasenia)}
+                    helperText={(errors.contrasenia && touched.contrasenia) && errors.contrasenia}
+                    value={values.contrasenia}
+                    onChange={handleChange}
+                    inputProps={{ maxLength: 100 }}
                   />
                 </div>
                     
                 
-                <div className='recap'>
-                  <ReCAPTCHA sitekey='6LeTDagnAAAAAIoVwYCKw3YJmAZgT6xxel9L9gIF' ref={recaptchaRef} onChange={onChange} />
-                </div>
+              
                 {/* Botón de registro */}
                 <button className='button2'  type="submit" >
-                  Enviar Link
+                    Restablecer contraseña
                 </button>
           </Form>
         )}
@@ -92,4 +98,4 @@ const ForgotPassword = ({ setLoggedIn }) => {
   );
 };
 
-export default ForgotPassword;
+export default NewPassword;

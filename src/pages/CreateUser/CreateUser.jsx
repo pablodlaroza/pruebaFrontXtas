@@ -1,26 +1,30 @@
 import React, { useRef, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { TextField, Button, Checkbox, FormControlLabel, Grid } from '@mui/material';
+import { TextField, Button, Checkbox, FormControlLabel, Grid , Container} from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 import ReCAPTCHA from 'react-google-recaptcha';
+import axios from 'axios';
+import swal from 'sweetalert';
+
+
 import './CreateUser.css'
 
 const SignupSchema = Yup.object().shape({
-  firstName: Yup.string().required('Campo obligatorio').max(50),
+  primer_nombre: Yup.string().required('Campo obligatorio').max(50),
   secondName: Yup.string().max(50),
-  lastName: Yup.string().required('Campo obligatorio').max(50),
+  primer_apellido: Yup.string().required('Campo obligatorio').max(50),
   secondLastName: Yup.string().max(50),
-  email: Yup.string().email('Correo inválido').required('Campo obligatorio').max(100),
+  correo: Yup.string().email('Correo inválido').required('Campo obligatorio').max(100),
   password: Yup.string().required('Campo obligatorio').max(100),
-  confirmPassword: Yup.string()
+  contrasenia: Yup.string()
     .required('Campo obligatorio')
     .oneOf([Yup.ref('password'), null], 'Las contraseñas deben coincidir')
     .max(100),
   acceptTerms: Yup.boolean().oneOf([true], 'Debes aceptar los términos y condiciones'),
 });
 
-const CreateUser = () => { 
+const CreateUser = ({setLoggedIn, loggedIn} ) => { 
   const [captcha, setCaptcha]= useState(null)
   const recaptchaRef = useRef(null)
   const navigate = useNavigate();
@@ -29,7 +33,21 @@ const CreateUser = () => {
     console.log('elusuario no es un robot')
   }
   
-  const handleSubmit = (values) => {
+  const handleSubmit = async (values) => {
+    const response = await axios.post('http://pruebaxkape1.com.devel/api/plataforma/registrar', values)
+    console.log(response)
+    
+
+    if(response.status == 201){
+      swal("Registro existoso", "", "success");
+      navigate('/Iniciar Sesión', { state: { replace: true } });
+     
+    }else{
+      swal("Registro Fallido", "", "error");
+    }
+    
+    
+
     const recaptchaValue = recaptchaRef.current.getValue();
     if (!recaptchaValue) {
       alert('Por favor, complete el reCAPTCHA.');
@@ -37,25 +55,25 @@ const CreateUser = () => {
     }
     
     // Lógica para enviar los datos al servidor (signup)
-    console.log('Valores enviados:', values);
+    // console.log('Valores enviados:', values);
     // ... Realizar la solicitud al servidor aquí ...
   };
 
   return (
-    <div>
-      <button onClick={() => navigate('/start')}>
+    <Container  maxWidth="sm">
+      {/* <button onClick={() => navigate('/')}>
         Volver al inicio
-      </button>
+      </button> */}
       
       <Formik
         initialValues={{
-          firstName: '',
+          primer_nombre: '',
           secondName: '',
-          lastName: '',
+          primer_apellido: '',
           secondLastName: '',
-          email: '',
+          correo: '',
           password: '',
-          confirmPassword: '',
+          contrasenia: '',
           acceptTerms: false,
         }}
         validationSchema={SignupSchema}
@@ -69,13 +87,13 @@ const CreateUser = () => {
                 <div>
                   <TextField
                     label="Primer Nombre"
-                    name="firstName"
+                    name="primer_nombre"
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    error={Boolean(errors.firstName && touched.firstName)}
-                    helperText={(errors.firstName && touched.firstName) && errors.firstName}
-                    value={values.firstName}
+                    error={Boolean(errors.primer_nombre && touched.primer_nombre)}
+                    helperText={(errors.primer_nombre && touched.primer_nombre) && errors.primer_nombre}
+                    value={values.primer_nombre}
                     onChange={handleChange}
                     inputProps={{ maxLength: 50 }}
                     autoComplete="off"
@@ -84,13 +102,13 @@ const CreateUser = () => {
                 <div >
                   <TextField
                     label="Primer Apellido"
-                    name="lastName"
+                    name="primer_apellido"
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    error={Boolean(errors.lastName && touched.lastName)}
-                    helperText={(errors.lastName && touched.lastName) && errors.lastName}
-                    value={values.lastName}
+                    error={Boolean(errors.primer_apellido && touched.primer_apellido)}
+                    helperText={(errors.primer_apellido && touched.primer_apellido) && errors.primer_apellido}
+                    value={values.primer_apellido}
                     onChange={handleChange}
                     inputProps={{ maxLength: 50 }}
                     autoComplete="off"
@@ -133,14 +151,14 @@ const CreateUser = () => {
             <div>
                   <TextField
                     label="Correo"
-                    name="email"
-                    type="email"
+                    name="correo"
+                    type="correo"
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    error={Boolean(errors.email && touched.email)}
-                    helperText={(errors.email && touched.email) && errors.email}
-                    value={values.email}
+                    error={Boolean(errors.correo && touched.correo)}
+                    helperText={(errors.correo && touched.correo) && errors.correo}
+                    value={values.correo}
                     onChange={handleChange}
                     inputProps={{ maxLength: 100 }}
                     autoComplete="off"
@@ -166,14 +184,14 @@ const CreateUser = () => {
                 <div>
                   <TextField
                     label="Confirmar Contraseña"
-                    name="confirmPassword"
+                    name="contrasenia"
                     type="password"
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    error={Boolean(errors.confirmPassword && touched.confirmPassword)}
-                    helperText={(errors.confirmPassword && touched.confirmPassword) && errors.confirmPassword}
-                    value={values.confirmPassword}
+                    error={Boolean(errors.contrasenia && touched.contrasenia)}
+                    helperText={(errors.contrasenia && touched.contrasenia) && errors.contrasenia}
+                    value={values.contrasenia}
                     onChange={handleChange}
                     inputProps={{ maxLength: 100 }}
                   />
@@ -199,13 +217,13 @@ const CreateUser = () => {
                   <ReCAPTCHA sitekey='6LeTDagnAAAAAIoVwYCKw3YJmAZgT6xxel9L9gIF' ref={recaptchaRef} onChange={onChange} />
                 </div>
                 {/* Botón de registro */}
-                <Button  type="submit" variant="contained" color="primary">
+                <button  type="submit" className='button2'>
                   Registrarse
-                </Button>
+                </button>
           </Form>
         )}
       </Formik>
-    </div>
+    </Container>
   );
 };
 

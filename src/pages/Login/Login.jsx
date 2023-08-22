@@ -4,15 +4,16 @@ import * as Yup from 'yup';
 import { TextField, Button, Checkbox, FormControlLabel, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom'
 import ReCAPTCHA from 'react-google-recaptcha';
+import axios from 'axios';
+import swal from 'sweetalert';
+import './Login.css'
+import jwtDecode from 'jwt-decode';
 
 const SignupSchema = Yup.object().shape({
-  email: Yup.string().email('Correo inválido').required('Campo obligatorio').max(100),
-  password: Yup.string().required('Campo obligatorio').max(100),
+  correo: Yup.string().email('Correo inválido').required('Campo obligatorio').max(100),
+  contrasenia: Yup.string().required('Campo obligatorio').max(100),
 });
-const user = {
-  email: "pablo@gmail.com",
-  password: "123"
-}
+
 
 const Login = ({ setLoggedIn }) => { 
   const [captcha, setCaptcha]= useState(null)
@@ -23,37 +24,44 @@ const Login = ({ setLoggedIn }) => {
     console.log('elusuario no es un robot')
   }
   
-  const handleSubmit = (values) => {
-  
+  const handleSubmit = async (values) => {
     const recaptchaValue = recaptchaRef.current.getValue();
     if (!recaptchaValue) {
       alert('Por favor, complete el reCAPTCHA.');
       return;
     }
+    try {
+      const response = await axios.post('http://pruebaxkape1.com.devel/api/plataforma/login', values)
+      console.log("token", response.data.data.data.token)
 
-    if(values.email == user.email && values.password== user.password){
-      console.log(values.email);
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('loggedIn', true);
-      navigate('/home', { state: { replace: true } });
-      setLoggedIn(true);
+      if(response.status == 200){
+        setLoggedIn(true);
+        const token = response.data.data.data.token;
+        localStorage.setItem('authToken', JSON.stringify({ token, idSesion: response.data.data.data.idSesion }));
+        swal("Bienvenido"  , response.data.data.data.user.primer_nombre, "success");
+        navigate('/home', { state: { replace: true } });
+        
+        localStorage.setItem('user', JSON.stringify(response.data.data.data.user));
+        localStorage.setItem('loggedIn', true);
+      
+      }
+    } catch (error) {
+      swal("Usuario o Contraseña invalidos"  , "intenta nuevamente ", "error");
+
     }
-    
-    
+  
     // ... Realizar la solicitud al servidor aquí ...
   };
 
   return (
-    <div>
-      <button onClick={() => navigate('/start')}>
-        Volver al inicio
-      </button>
+    <div className='containerLogin'>
+     
       
       <Formik
         initialValues={{
          
-          email: '',
-          password: '',
+          correo: '',
+          contrasenia: '',
           keepSesion: false
           
           
@@ -73,14 +81,14 @@ const Login = ({ setLoggedIn }) => {
             <div>
                   <TextField
                     label="Correo"
-                    name="email"
-                    type="email"
+                    name="correo"
+                    type="correo"
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    error={Boolean(errors.email && touched.email)}
-                    helperText={(errors.email && touched.email) && errors.email}
-                    value={values.email}
+                    error={Boolean(errors.correo && touched.correo)}
+                    helperText={(errors.correo && touched.correo) && errors.correo}
+                    value={values.correo}
                     onChange={handleChange}
                     inputProps={{ maxLength: 100 }}
                     autoComplete="off"
@@ -91,19 +99,19 @@ const Login = ({ setLoggedIn }) => {
                 <div>
                   <TextField
                     label="Contraseña"
-                    name="password"
+                    name="contrasenia"
                     type="password"
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    error={Boolean(errors.password && touched.password)}
-                    helperText={(errors.password && touched.password) && errors.password}
-                    value={values.password}
+                    error={Boolean(errors.contrasenia && touched.contrasenia)}
+                    helperText={(errors.contrasenia && touched.contrasenia) && errors.contrasenia}
+                    value={values.contrasenia}
                     onChange={handleChange}
                     inputProps={{ maxLength: 100 }}
                   />
                 </div>
-                <a href='/change-password' >¿Olvidaste tu Contraseña?</a>
+                <a href='/forgot-password' >¿Olvidaste tu Contraseña?</a>
              
 
                 <div>
@@ -116,7 +124,7 @@ const Login = ({ setLoggedIn }) => {
                         onChange={handleChange}
                       />
                     }
-                    label="Mantener Sesion"
+                    label="Mantener sesión iniciada"
                   />
                  
                 </div>
@@ -124,7 +132,7 @@ const Login = ({ setLoggedIn }) => {
                   <ReCAPTCHA sitekey='6LeTDagnAAAAAIoVwYCKw3YJmAZgT6xxel9L9gIF' ref={recaptchaRef} onChange={onChange} />
                 </div>
                 {/* Botón de registro */}
-                <button  type="submit" >
+                <button  className='button1'type="submit" >
                   Iniciar Sesion
                 </button>
           </Form>

@@ -1,0 +1,6 @@
+#chart{
+    width: 100%;
+    max-width: 600px; /* Ajusta el tamaño máximo de la gráfica */
+    height: auto; /* Para mantener la relación de aspecto */
+    margin: 0 auto;
+}

@@ -8,13 +8,8 @@ import axios from 'axios';
 import swal from 'sweetalert';
 
 const SignupSchema = Yup.object().shape({
-  codigo_verificacion: Yup.string().required('Campo obligatorio').max(100),
-
     password: Yup.string().required('Campo obligatorio').max(100),
-    nueva_contrasenia: Yup.string()
-    .required('Campo obligatorio')
-    .oneOf([Yup.ref('password'), null], 'Las contraseñas deben coincidir')
-    .max(100)
+    contrasenia: Yup.string()
 });
 
 
@@ -29,26 +24,20 @@ const NewPassword = ({ setLoggedIn }) => {
   
   const handleSubmit = async(values) => {
     try {
-      const response = await axios.put('http://pruebaxkape1.com.devel/api/plataforma/cambiar-contrasenia' , values)
-      console.log(response)
-      // if(response.status == 200){
-        swal("Contraseña actualizada", "" , "success");
-        navigate('/Iniciar Sesión', { state: { replace: true } });
-
-      // }
-    } catch (error) {
-      // console.log(error.response.status)
-      if(error.response.status === 404){
-        swal("Codigo invalido", "" , "error");
-      } else if(error.response.status === 400){
-        swal("Codigo expirado", "" , "error");
-      }else{
-
-        swal("Error al procesar la solicitud", "" , "error");
+      const response = await axios.post('http://pruebaxkape1.com.devel/api/plataforma/resetear-contrasenia' , values)
+      if(response.status == 200){
+        swal("Correo con codigo enviado", response.data.data.correo , "success");
       }
-
-
+    } catch (error) {
+      swal("Correo no registrado", "", "error");
     }
+    
+  
+    
+    // const id = response.
+    // const id = data.find((user) => user.username === values.username);
+
+  
   
   };
 
@@ -56,9 +45,8 @@ const NewPassword = ({ setLoggedIn }) => {
     <div>
       <Formik
         initialValues={{
-          codigo_verificacion: '',
             password: '',
-            nueva_contrasenia: '',
+            contrasenia: '',
         }}
         validationSchema={SignupSchema}
         onSubmit={handleSubmit}
@@ -66,25 +54,6 @@ const NewPassword = ({ setLoggedIn }) => {
         {({ isSubmitting, errors, touched, values, handleChange }) => (
           <Form className='container'>
             <h1>Ingresa nueva contraseña</h1>
-            <div>
-                  <TextField
-                    label="Codigo de verificación"
-                    name="codigo_verificacion"
-                    type="text"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    error={Boolean(errors.codigo_verificacion && touched.codigo_verificacion)}
-                    helperText={(errors.codigo_verificacion && touched.codigo_verificacion) && errors.codigo_verificacion}
-                    value={values.codigo_verificacion}
-                    onChange={handleChange}
-                    inputProps={{ maxLength: 100 }}
-                    autoComplete="off"
-                    className="large-input"
-                  />
-                </div>
-                    
-                
             <div>
                   <TextField
                     label="Contraseña"
@@ -103,14 +72,14 @@ const NewPassword = ({ setLoggedIn }) => {
                 <div>
                   <TextField
                     label="Confirmar Contraseña"
-                    name="nueva_contrasenia"
+                    name="contrasenia"
                     type="password"
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    error={Boolean(errors.nueva_contrasenia && touched.nueva_contrasenia)}
-                    helperText={(errors.nueva_contrasenia && touched.nueva_contrasenia) && errors.nueva_contrasenia}
-                    value={values.nueva_contrasenia}
+                    error={Boolean(errors.contrasenia && touched.contrasenia)}
+                    helperText={(errors.contrasenia && touched.contrasenia) && errors.contrasenia}
+                    value={values.contrasenia}
                     onChange={handleChange}
                     inputProps={{ maxLength: 100 }}
                   />

@@ -111,7 +111,7 @@ const Login = ({ setLoggedIn }) => {
                     inputProps={{ maxLength: 100 }}
                   />
                 </div>
-                <a href='/forgot-password' >¿Olvidaste tu Contraseña?</a>
+                <a href='/forgot-password' >¿Olvidaste tu contraseña?</a>
              
 
                 <div>
